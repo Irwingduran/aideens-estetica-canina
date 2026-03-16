@@ -57,7 +57,7 @@ export function Footer() {
                 <ellipse cx="16" cy="7" rx="2" ry="2.5" />
               </svg>
             </div>
-            <span className="font-serif text-xl text-cream">Estética Canina</span>
+            <span className="font-serif text-xl text-cream">Aideens Estética Canina</span>
           </Link>
 
           {/* Navigation */}
@@ -96,7 +96,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="font-sans text-sm text-cream/50">
-            © {new Date().getFullYear()} Estética Canina. Todos los derechos reservados.
+            © {new Date().getFullYear()} Aideens Estética Canina. Todos los derechos reservados.
           </p>
           <p className="font-sans text-sm text-cream/50">
             Hecho con{" "}

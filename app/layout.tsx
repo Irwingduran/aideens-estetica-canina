@@ -17,12 +17,12 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Estética Canina | La transformación que merecen',
-  description: 'Estética canina premium. Servicios de grooming, baño y spa para tu mascota. Más de 2,400 perros atendidos con 98% de satisfacción.',
+  title: 'Aideens Estética Canina | La transformación que merecen',
+  description: 'Aideens Estética Canina premium. Servicios de grooming, baño y spa para tu mascota. Más de 2,400 perros atendidos con 98% de satisfacción.',
   generator: 'v0.app',
   openGraph: {
-    title: 'Estética Canina | La transformación que merecen',
-    description: 'Estética canina premium. Servicios de grooming, baño y spa para tu mascota.',
+    title: 'Aideens Estética Canina | La transformación que merecen',
+    description: 'Aideens Estética Canina premium. Servicios de grooming, baño y spa para tu mascota.',
     type: 'website',
   },
   icons: {

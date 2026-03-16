@@ -50,7 +50,7 @@ export function Navbar() {
             </svg>
           </motion.div>
           <span className="font-serif text-xl text-warm-dark">
-            Estética Canina
+            Aideens Estética Canina
           </span>
         </Link>
 
