@@ -3,6 +3,8 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 
+import Link from "next/link"
+
 interface ServiceCardProps {
   title: string
   duration: string
@@ -11,18 +13,20 @@ interface ServiceCardProps {
   image: string
   icon: React.ReactNode
   index: number
+  href: string
 }
 
-function ServiceCard({ title, duration, price, description, image, icon, index }: ServiceCardProps) {
+function ServiceCard({ title, duration, price, description, image, icon, index, href }: ServiceCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      viewport={{ once: true }}
-      whileHover={{ y: -8 }}
-      className="group relative h-[420px] rounded-2xl overflow-hidden border border-warm-dark/10 shadow-lg shadow-warm-dark/5 hover:shadow-2xl hover:shadow-gold/10 transition-shadow duration-500"
-    >
+    <Link href={href}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: index * 0.1 }}
+        viewport={{ once: true }}
+        whileHover={{ y: -8 }}
+        className="group relative h-[420px] rounded-2xl overflow-hidden border border-warm-dark/10 shadow-lg shadow-warm-dark/5 hover:shadow-2xl hover:shadow-gold/10 transition-shadow duration-500 cursor-pointer"
+      >
       {/* Image */}
       <div className="absolute inset-0">
         <Image
@@ -85,7 +89,8 @@ function ServiceCard({ title, duration, price, description, image, icon, index }
           </motion.button>
         </motion.div>
       </div>
-    </motion.div>
+      </motion.div>
+    </Link>
   )
 }
 
@@ -97,6 +102,7 @@ export function ServicesSection() {
       price: "desde $350",
       description: "Baño profundo con shampoo premium orgánico, secado profesional y cepillado completo para un pelaje brillante.",
       image: "/images/service-bath.jpg",
+      href: "/servicios/bath-dry",
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M4 12h16M6 12v8a2 2 0 002 2h8a2 2 0 002-2v-8" />
@@ -111,6 +117,7 @@ export function ServicesSection() {
       price: "desde $550",
       description: "Servicio completo: baño, corte personalizado según raza, arreglo de uñas, limpieza de oídos y perfumado final.",
       image: "/images/service-grooming.jpg",
+      href: "/servicios/full-grooming",
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M6 6l2 2M18 18l-2-2M6 18l2-2M18 6l-2 2" />
@@ -125,6 +132,7 @@ export function ServicesSection() {
       price: "variedad",
       description: "Línea exclusiva de productos para el cuidado de tu mascota: shampoos orgánicos, cepillos profesionales, snacks naturales y accesorios de lujo.",
       image: "/images/service-products.jpg",
+      href: "/servicios/productos",
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
