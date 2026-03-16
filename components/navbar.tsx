@@ -19,7 +19,8 @@ export function Navbar() {
   const navItems = [
     { href: "#servicios", label: "Servicios" },
     { href: "#proceso", label: "Proceso" },
-    { href: "#contacto", label: "Contacto" },
+    { href: "#galeria", label: "Galería" },
+    { href: "#faq", label: "FAQ" },
   ]
 
   return (

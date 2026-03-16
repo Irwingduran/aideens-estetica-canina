@@ -3,6 +3,8 @@ import { Hero } from "@/components/hero"
 import { StatsSection } from "@/components/stats-section"
 import { ServicesSection } from "@/components/services-section"
 import { ProcessSection } from "@/components/process-section"
+import { GallerySection } from "@/components/gallery-section"
+import { FAQSection } from "@/components/faq-section"
 import { BookingSection } from "@/components/booking-section"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
@@ -16,6 +18,8 @@ export default function Home() {
       <StatsSection />
       <ServicesSection />
       <ProcessSection />
+      <GallerySection />
+      <FAQSection />
       <BookingSection />
       <Footer />
     </main>
