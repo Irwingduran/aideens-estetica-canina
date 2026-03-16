@@ -7,9 +7,21 @@ import Link from "next/link"
 export function Hero() {
   return (
     <section className="relative h-screen w-full overflow-hidden">
+      {/* Gradient Background Overlay */}
+      <div className="absolute inset-0 z-[5] pointer-events-none bg-gradient-to-b from-cream/30 via-transparent to-cream/50" />
+      
+      {/* Subtle Grid Pattern */}
+      <div
+        className="absolute inset-0 z-[6] pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(to right, #1C1814 1px, transparent 1px), linear-gradient(to bottom, #1C1814 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
+        }}
+      />
+
       {/* Grain Overlay */}
       <div
-        className="absolute inset-0 z-10 pointer-events-none opacity-30"
+        className="absolute inset-0 z-10 pointer-events-none opacity-20"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
@@ -28,38 +40,69 @@ export function Hero() {
         <div className="container mx-auto h-full px-6 flex flex-col justify-between py-24 md:py-32">
           {/* Headline */}
           <div className="max-w-xl">
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="inline-block font-sans text-sm text-gold uppercase tracking-[0.25em] mb-4"
+            >
+              Aideens Estética Canina
+            </motion.span>
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="font-serif text-5xl md:text-7xl lg:text-[96px] leading-[0.95] mix-blend-multiply"
+              className="font-serif text-5xl md:text-7xl lg:text-[96px] leading-[0.95]"
             >
-              <span className="italic text-warm-dark block">La transformación</span>
-              <span className="text-gold block mt-2">que merecen.</span>
+              <span className="italic text-warm-dark block drop-shadow-sm">La transformación</span>
+              <span className="text-gold block mt-2 drop-shadow-sm">que merecen.</span>
             </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="font-sans text-lg text-warm-dark/70 mt-6 max-w-md"
+            >
+              Cuidado premium para tu mejor amigo. Grooming profesional con productos orgánicos.
+            </motion.p>
           </div>
 
           {/* Bottom Content */}
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
-            {/* CTA Button */}
+            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="pointer-events-auto"
+              className="pointer-events-auto flex flex-col sm:flex-row gap-4"
             >
+              {/* Primary CTA with Glow */}
               <Link
                 href="#contacto"
-                className="group inline-flex items-center gap-2 px-10 py-4 bg-warm-dark text-cream font-sans text-lg rounded-full hover:bg-gold transition-all duration-300"
+                className="group relative inline-flex items-center gap-3 px-10 py-4 bg-gold text-warm-dark font-sans font-semibold text-lg rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(201,168,76,0.5)]"
               >
                 <span>Agenda su cita</span>
-                <motion.span
-                  className="inline-block"
-                  whileHover={{ x: 6 }}
-                  transition={{ duration: 0.2 }}
+                <motion.svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  className="transition-transform duration-300 group-hover:translate-x-1"
                 >
-                  →
-                </motion.span>
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </motion.svg>
+                {/* Glow Effect */}
+                <div className="absolute inset-0 -z-10 rounded-full bg-gold/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </Link>
+              
+              {/* Secondary CTA */}
+              <Link
+                href="#servicios"
+                className="group inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/10 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/20 hover:bg-warm-dark hover:text-cream transition-all duration-300"
+              >
+                <span>Ver servicios</span>
               </Link>
             </motion.div>
 

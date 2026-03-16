@@ -20,7 +20,8 @@ function ServiceCard({ title, duration, price, description, image, icon, index }
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       viewport={{ once: true }}
-      className="group relative h-[420px] rounded-2xl overflow-hidden"
+      whileHover={{ y: -8 }}
+      className="group relative h-[420px] rounded-2xl overflow-hidden border border-warm-dark/10 shadow-lg shadow-warm-dark/5 hover:shadow-2xl hover:shadow-gold/10 transition-shadow duration-500"
     >
       {/* Image */}
       <div className="absolute inset-0">
@@ -28,30 +29,39 @@ function ServiceCard({ title, duration, price, description, image, icon, index }
           src={image}
           alt={title}
           fill
-          className="object-cover transition-all duration-500 grayscale group-hover:grayscale-0"
+          className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
         {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-warm-dark/90 via-warm-dark/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-warm-dark/95 via-warm-dark/50 to-warm-dark/20 group-hover:from-warm-dark/90 transition-all duration-500" />
       </div>
 
       {/* Content */}
       <div className="relative h-full flex flex-col justify-end p-6">
-        {/* Icon */}
-        <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-cream/10 backdrop-blur-sm flex items-center justify-center text-gold">
+        {/* Icon with animation */}
+        <motion.div 
+          className="absolute top-6 right-6 w-14 h-14 rounded-full bg-gold/20 backdrop-blur-md flex items-center justify-center text-gold border border-gold/30 group-hover:bg-gold group-hover:text-warm-dark transition-all duration-500"
+          whileHover={{ rotate: 15 }}
+        >
           {icon}
-        </div>
+        </motion.div>
 
         {/* Title - Always visible */}
-        <motion.h3 className="font-serif text-2xl md:text-3xl text-cream mb-2">
+        <motion.h3 className="font-serif text-2xl md:text-3xl text-cream mb-2 group-hover:text-gold transition-colors duration-300">
           {title}
         </motion.h3>
 
         {/* Meta - Always visible */}
         <div className="flex items-center gap-3 text-cream/70 font-sans text-sm mb-4">
-          <span>{duration}</span>
-          <span className="w-1 h-1 rounded-full bg-gold" />
-          <span className="text-gold font-medium">{price}</span>
+          <span className="flex items-center gap-1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            {duration}
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+          <span className="text-gold font-semibold">{price}</span>
         </div>
 
         {/* Description - Slides up on hover */}
@@ -66,7 +76,7 @@ function ServiceCard({ title, duration, price, description, image, icon, index }
           </motion.p>
 
           <motion.button
-            className="font-sans text-sm text-gold flex items-center gap-2 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400 delay-75"
+            className="font-sans text-sm text-gold flex items-center gap-2 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400 delay-75 hover:gap-3"
           >
             Ver más
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

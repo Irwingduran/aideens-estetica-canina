@@ -292,11 +292,26 @@ export function BookingSection() {
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 bg-warm-dark text-cream font-sans text-lg rounded-full hover:bg-gold transition-colors duration-300"
+                    className="group relative w-full py-4 bg-gold text-warm-dark font-sans font-semibold text-lg rounded-full hover:shadow-[0_0_30px_rgba(201,168,76,0.5)] transition-all duration-300 flex items-center justify-center gap-3"
                   >
-                    {formData.dogName
-                      ? `Confirmar cita para ${formData.dogName}`
-                      : "Confirmar cita"}
+                    <span>
+                      {formData.dogName
+                        ? `Confirmar cita para ${formData.dogName}`
+                        : "Confirmar cita"}
+                    </span>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      className="transition-transform duration-300 group-hover:translate-x-1"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                    {/* Glow Effect */}
+                    <div className="absolute inset-0 -z-10 rounded-full bg-gold/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </motion.button>
                 </motion.form>
               )}
