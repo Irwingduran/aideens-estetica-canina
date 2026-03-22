@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useCallback, useEffect } from "react"
-import { motion, useAnimation } from "framer-motion"
+import { motion, useAnimation, useMotionValue, useTransform, animate } from "framer-motion"
 import Image from "next/image"
 
 interface BeforeAfterSliderProps {
@@ -10,6 +10,8 @@ interface BeforeAfterSliderProps {
   beforeAlt?: string
   afterAlt?: string
   initialPosition?: number
+  /** Ángulo diagonal del divider en grados (0 = vertical, ~8° recomendado) */
+  dividerAngle?: number
 }
 
 export function BeforeAfterSlider({
@@ -18,20 +20,71 @@ export function BeforeAfterSlider({
   beforeAlt = "Antes del grooming",
   afterAlt = "Después del grooming",
   initialPosition = 50,
+  dividerAngle = 8,
 }: BeforeAfterSliderProps) {
-  const [position, setPosition] = useState(initialPosition)
   const [isDragging, setIsDragging] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const handleControls = useAnimation()
 
+  // Usar MotionValue para que el clip-path se actualice sin re-render
+  const position = useMotionValue(initialPosition)
+  const [displayPosition, setDisplayPosition] = useState(initialPosition)
+
+  // Offset diagonal: el borde se inclina `dividerAngle` grados
+  // Se calcula el desfase horizontal equivalente a la tangente del ángulo
+  const diagOffset = useTransform(position, (p) => {
+    // porcentaje como número (0-100)
+    return p
+  })
+
+  // Clip-path diagonal: crea un polígono inclinado
+  const clipPathValue = useTransform(position, (p) => {
+    // offsetTop/offsetBottom en % relativos al ancho del contenedor
+    // tan(angle) * 100 da el desplazamiento horizontal en % cuando alto == ancho
+    // Usamos una aproximación fija en px luego convertida
+    const angleDeg = dividerAngle
+    const rad = (angleDeg * Math.PI) / 180
+    // Para un contenedor típico 16:9, ajustamos el offset
+    const offsetPercent = Math.tan(rad) * 56 // 56% = approx half-height/width ratio para 16:9
+    const left = Math.max(0, p - offsetPercent / 2)
+    const right = Math.min(100, p + offsetPercent / 2)
+    return `polygon(0 0, ${right}% 0, ${left}% 100%, 0 100%)`
+  })
+
+  // Posición del divider (línea y handle)
+  const dividerLeft = useTransform(position, (p) => `${p}%`)
+
+  // Glow dinámico según distancia al centro
+  const glowOpacity = useTransform(position, (p) => {
+    const dist = Math.abs(p - 50) / 50
+    return 0.35 + dist * 0.55
+  })
+  const glowSize = useTransform(position, (p) => {
+    const dist = Math.abs(p - 50) / 50
+    return `${6 + dist * 22}px`
+  })
+
+  // Blur en la imagen "después" cuando slider está muy a la izquierda
+  const afterBlur = useTransform(position, (p) => {
+    if (p > 25) return "blur(0px)"
+    return `blur(${(25 - p) * 0.18}px)`
+  })
+
+  // Labels que se mueven con el divider
+  const labelBeforeLeft = useTransform(position, (p) => `${Math.max(2, p - 6)}%`)
+  const labelAfterLeft = useTransform(position, (p) => `${Math.min(95, p + 2)}%`)
+  const labelBeforeOpacity = useTransform(position, (p) => (p < 8 ? 0 : 1))
+  const labelAfterOpacity = useTransform(position, (p) => (p > 92 ? 0 : 1))
+
   const updatePosition = useCallback((clientX: number) => {
     if (!containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
     const x = clientX - rect.left
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100))
-    setPosition(percentage)
-  }, [])
+    const pct = Math.max(0, Math.min(100, (x / rect.width) * 100))
+    position.set(pct)
+    setDisplayPosition(pct)
+  }, [position])
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -45,9 +98,7 @@ export function BeforeAfterSlider({
     updatePosition(e.clientX)
   }, [isDragging, updatePosition])
 
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false)
-  }, [])
+  const handleMouseUp = useCallback(() => setIsDragging(false), [])
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     setIsDragging(true)
@@ -61,47 +112,46 @@ export function BeforeAfterSlider({
     updatePosition(e.touches[0].clientX)
   }, [isDragging, updatePosition])
 
-  const handleTouchEnd = useCallback(() => {
-    setIsDragging(false)
-  }, [])
+  const handleTouchEnd = useCallback(() => setIsDragging(false), [])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const step = e.shiftKey ? 10 : 5
     if (e.key === "ArrowLeft") {
-      setPosition((p) => Math.max(0, p - 5))
+      position.set(Math.max(0, position.get() - step))
       setHasInteracted(true)
     } else if (e.key === "ArrowRight") {
-      setPosition((p) => Math.min(100, p + 5))
+      position.set(Math.min(100, position.get() + step))
       setHasInteracted(true)
     }
-  }, [])
+  }, [position])
 
-  // Auto-sweep animation hint after 2s of idle
+  // Sweep automático dramático: recorre de izquierda a derecha
   useEffect(() => {
     if (hasInteracted) return
     const timer = setTimeout(async () => {
-      await handleControls.start({
-        x: [-20, 20, 0],
-        transition: { duration: 1.2, ease: "easeInOut" }
-      })
-    }, 2000)
+      // Animar el MotionValue directamente para que el reveal sea visible
+      await animate(position, 25, { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] })
+      await animate(position, 75, { duration: 1.0, ease: [0.25, 0.1, 0.25, 1] })
+      await animate(position, initialPosition, { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] })
+    }, 1800)
     return () => clearTimeout(timer)
-  }, [hasInteracted, handleControls])
+  }, [hasInteracted, position, initialPosition])
 
-  // Global mouse up listener
+  // Global mouse/touch up
   useEffect(() => {
-    const handleGlobalMouseUp = () => setIsDragging(false)
-    window.addEventListener("mouseup", handleGlobalMouseUp)
-    window.addEventListener("touchend", handleGlobalMouseUp)
+    const up = () => setIsDragging(false)
+    window.addEventListener("mouseup", up)
+    window.addEventListener("touchend", up)
     return () => {
-      window.removeEventListener("mouseup", handleGlobalMouseUp)
-      window.removeEventListener("touchend", handleGlobalMouseUp)
+      window.removeEventListener("mouseup", up)
+      window.removeEventListener("touchend", up)
     }
   }, [])
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full overflow-hidden select-none"
+      className="relative w-full h-full overflow-hidden select-none focus:outline-none"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -112,14 +162,14 @@ export function BeforeAfterSlider({
       role="slider"
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-valuenow={Math.round(position)}
+      aria-valuenow={Math.round(displayPosition)}
       aria-label="Comparación antes y después"
       tabIndex={0}
       onKeyDown={handleKeyDown}
       style={{ cursor: isDragging ? "grabbing" : "grab" }}
     >
-      {/* After Image (Background) */}
-      <div className="absolute inset-0">
+      {/* After Image — con blur cuando slider está muy a la izquierda */}
+      <motion.div className="absolute inset-0" style={{ filter: afterBlur }}>
         <Image
           src={afterImage}
           alt={afterAlt}
@@ -128,12 +178,12 @@ export function BeforeAfterSlider({
           priority
           sizes="100vw"
         />
-      </div>
+      </motion.div>
 
-      {/* Before Image (Clipped) */}
-      <div
+      {/* Before Image — clip diagonal */}
+      <motion.div
         className="absolute inset-0"
-        style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
+        style={{ clipPath: clipPathValue }}
       >
         <Image
           src={beforeImage}
@@ -143,113 +193,172 @@ export function BeforeAfterSlider({
           priority
           sizes="100vw"
         />
-      </div>
+      </motion.div>
 
-      {/* Labels */}
+      {/* Label "Antes" — flota a la izquierda del divider */}
       <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5, duration: 0.5 }}
-        className="absolute top-6 left-6 z-10"
+        className="absolute bottom-6 z-10 pointer-events-none"
+        style={{
+          left: labelBeforeLeft,
+          opacity: labelBeforeOpacity,
+          translateX: "-100%",
+          paddingRight: "10px",
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.4 }}
       >
-        <span className="px-4 py-2 text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-cream bg-warm-dark/50 backdrop-blur-md rounded-full">
+        <span className="px-3 py-1.5 text-[10px] font-sans font-semibold uppercase tracking-[0.22em] text-cream bg-warm-dark/55 backdrop-blur-md rounded-full whitespace-nowrap">
           Antes
         </span>
       </motion.div>
 
+      {/* Label "Después" — flota a la derecha del divider */}
       <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5, duration: 0.5 }}
-        className="absolute top-6 right-6 z-10"
+        className="absolute bottom-6 z-10 pointer-events-none"
+        style={{
+          left: labelAfterLeft,
+          opacity: labelAfterOpacity,
+          paddingLeft: "10px",
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.4 }}
       >
-        <span className="px-4 py-2 text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-cream bg-warm-dark/50 backdrop-blur-md rounded-full">
+        <span className="px-3 py-1.5 text-[10px] font-sans font-semibold uppercase tracking-[0.22em] text-cream bg-warm-dark/55 backdrop-blur-md rounded-full whitespace-nowrap">
           Después
         </span>
       </motion.div>
 
-      {/* Divider Line */}
-      <div
-        className="absolute top-0 bottom-0 w-0.5 bg-gold z-20"
+      {/* Divider Line — inclinada con transform */}
+      <motion.div
+        className="absolute top-0 bottom-0 z-20 pointer-events-none"
         style={{
-          left: `${position}%`,
-          transform: "translateX(-50%)",
-          boxShadow: "0 0 12px rgba(201,168,76,0.6)",
+          left: dividerLeft,
+          translateX: "-50%",
+          width: "2px",
+          background: "rgba(201,168,76,1)",
+          transform: `translateX(-50%) rotate(${dividerAngle}deg)`,
+          transformOrigin: "center center",
+          scaleY: 1.15, // compensa el recorte por la rotación
+          boxShadow: "0 0 14px rgba(201,168,76,0.5)",
         }}
       />
 
       {/* Handle */}
       <motion.div
-        animate={handleControls}
         className="absolute top-1/2 z-30"
         style={{
-          left: `${position}%`,
-          transform: "translate(-50%, -50%)",
+          left: dividerLeft,
+          translateX: "-50%",
+          translateY: "-50%",
         }}
       >
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{
-            scale: isDragging ? 1.2 : 1,
+            scale: isDragging ? 1.18 : 1,
             opacity: 1,
           }}
           transition={{
             type: "spring",
-            stiffness: 300,
-            damping: 20,
-            delay: 0.3,
+            stiffness: 280,
+            damping: 18,
+            opacity: { delay: 0.3, duration: 0.3 },
           }}
-          className="relative"
+          className="relative flex items-center justify-center"
         >
-          {/* Pulse animation */}
+          {/* Pulse ring */}
           {!isDragging && !hasInteracted && (
             <motion.div
-              className="absolute inset-0 rounded-full bg-gold"
+              className="absolute rounded-full"
+              style={{
+                width: 58,
+                height: 58,
+                background: "rgba(201,168,76,0.25)",
+                border: "1.5px solid rgba(201,168,76,0.5)",
+              }}
               animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.5, 0, 0.5],
+                scale: [1, 1.45, 1],
+                opacity: [0.6, 0, 0.6],
               }}
               transition={{
-                duration: 2,
+                duration: 2.2,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              style={{ width: 56, height: 56 }}
             />
           )}
-          
-          {/* Handle Circle */}
+
+          {/* Handle circle con ícono de tijeras */}
           <div
-            className="flex items-center justify-center w-14 h-14 rounded-full bg-cream border-[3px] border-gold"
+            className="relative flex items-center justify-center w-14 h-14 rounded-full bg-cream border-[2.5px] border-gold"
             style={{
-              boxShadow: "0 4px 20px rgba(28,24,20,0.25)",
+              boxShadow: "0 4px 24px rgba(28,24,20,0.28)",
             }}
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="text-gold"
+            <motion.div
+              animate={{
+                rotate: isDragging ? 20 : 0,
+                scale: isDragging ? 1.1 : 1,
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
-              <path
-                d="M8 6L4 12L8 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M16 6L20 12L16 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              <ScissorsIcon className="text-gold" />
+            </motion.div>
           </div>
         </motion.div>
       </motion.div>
     </div>
+  )
+}
+
+/** Ícono de tijeras custom — más coherente con contexto de grooming */
+function ScissorsIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      {/* Aro izquierdo */}
+      <circle cx="6" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+      {/* Aro derecho */}
+      <circle cx="6" cy="17" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+      {/* Hoja superior */}
+      <line
+        x1="8.2"
+        y1="8.2"
+        x2="21"
+        y2="3"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      {/* Hoja inferior */}
+      <line
+        x1="8.2"
+        y1="15.8"
+        x2="21"
+        y2="21"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      {/* Cruce en el pivote */}
+      <line
+        x1="8.2"
+        y1="8.2"
+        x2="8.2"
+        y2="15.8"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.4"
+      />
+    </svg>
   )
 }

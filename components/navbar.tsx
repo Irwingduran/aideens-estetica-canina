@@ -50,7 +50,7 @@ export function Navbar() {
             </svg>
           </motion.div>
           <span className="font-serif text-xl text-warm-dark">
-            Aideens Estética Canina
+            Aideen's Estética Canina
           </span>
         </Link>
 
@@ -67,10 +67,10 @@ export function Navbar() {
             </Link>
           ))}
           <Link
-            href="#contacto"
+            href="/cotizar"
             className="px-6 py-2.5 bg-warm-dark text-cream font-sans text-sm rounded-full hover:bg-gold transition-colors duration-300"
           >
-            Agenda tu cita
+           Cotiza con una foto
           </Link>
         </div>
 

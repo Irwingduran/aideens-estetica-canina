@@ -78,10 +78,10 @@ export function Hero() {
             >
               {/* Primary CTA with Glow */}
               <Link
-                href="#contacto"
+                href="/cotizar"
                 className="group relative inline-flex items-center gap-3 px-10 py-4 bg-gold text-warm-dark font-sans font-semibold text-lg rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(201,168,76,0.5)]"
               >
-                <span>Agenda su cita</span>
+                <span>Cotiza con una foto </span>
                 <motion.svg
                   width="20"
                   height="20"
