@@ -134,8 +134,8 @@ export function BookingSection() {
   }
 
   const serviceOptions = [
-    { value: "bath", label: "Bath & Dry" },
-    { value: "grooming", label: "Full Grooming" },
+    { value: "bath", label: "Baño & Secado" },
+    { value: "grooming", label: "Grooming Completo" },
     { value: "spa", label: "Spa Premium" },
   ]
 
@@ -158,9 +158,9 @@ export function BookingSection() {
               <span className="italic text-gold">lo mejor</span>
             </h2>
             <p className="font-sans text-lg text-warm-dark/70 leading-relaxed mb-8">
-              Agenda una cita y déjanos consentir a tu peludo con el cuidado premium 
-              que se merece. Nuestros groomers certificados están listos para crear 
-              la transformación perfecta.
+              En Guadalajara y Zapopan, agenda una cita y déjanos consentir a tu peludo 
+              con el cuidado premium que se merece. Nuestros groomers certificados 
+              están listos para crear la transformación perfecta.
             </p>
 
             {/* Features */}
@@ -170,6 +170,7 @@ export function BookingSection() {
                 "Productos orgánicos y premium",
                 "Groomers con +5 años de experiencia",
                 "Fotos del antes y después incluidas",
+                "Jardines de Guadalupe, GDL — fácil acceso",
               ].map((feature, index) => (
                 <motion.div
                   key={feature}

@@ -17,7 +17,7 @@ const galleryItems: GalleryItem[] = [
     id: 1,
     beforeImage: "/images/gallery-before-1.jpg",
     afterImage: "/images/gallery-after-1.jpg",
-    petName: "Luna",
+    petName: "Canela",
     breed: "Poodle",
     service: "Grooming Completo"
   },
@@ -25,7 +25,7 @@ const galleryItems: GalleryItem[] = [
     id: 2,
     beforeImage: "/images/gallery-before-2.jpg",
     afterImage: "/images/gallery-after-2.jpg",
-    petName: "Max",
+    petName: "Tequila",
     breed: "Shih Tzu",
     service: "Corte de Raza"
   },
@@ -33,7 +33,7 @@ const galleryItems: GalleryItem[] = [
     id: 3,
     beforeImage: "/images/gallery-before-3.jpg",
     afterImage: "/images/gallery-after-3.jpg",
-    petName: "Rocky",
+    petName: "Charly",
     breed: "Schnauzer",
     service: "Spa Premium"
   },

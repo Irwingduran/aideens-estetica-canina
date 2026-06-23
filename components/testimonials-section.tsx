@@ -77,29 +77,29 @@ function TestimonialCard({ quote, author, petName, petBreed, rating, index }: Te
 export function TestimonialsSection() {
   const testimonials = [
     {
-      quote: "Increíble transformación. Mi Lola salió como modelo de revista. El equipo es super profesional y cariñoso con las mascotas. 100% recomendado.",
-      author: "María González",
+      quote: "Desde Providencia llegamos y valió cada minuto. Mi Lola salió como modelo de revista. El equipo es súper profesional y cariñoso. 100% recomendado en Guadalajara.",
+      author: "María Fernanda Palacios",
       petName: "Lola",
       petBreed: "Poodle",
       rating: 5,
     },
     {
-      quote: "Primera vez que mi perro no tiembla en una estética. Se nota que aman a los animales. Max quedó hermoso y relajado.",
-      author: "Carlos Ramírez",
+      quote: "Primera vez que mi perro no tiembla en una estética. Se nota que aman a los animales. Max quedó hermoso y relajado. De Zapopan, fieles clientes.",
+      author: "Carlos Hernández",
       petName: "Max",
       petBreed: "Golden Retriever",
       rating: 5,
     },
     {
-      quote: "Los productos premium hacen toda la diferencia. El pelaje de Coco brilla como nunca. Ya tenemos cita para el próximo mes.",
-      author: "Ana Martínez",
+      quote: "Los productos premium hacen toda la diferencia. El pelaje de Coco brilla como nunca. Lo traigo desde Tlaquepaque porque no hay otro así acá.",
+      author: "Ana Sofía Jiménez",
       petName: "Coco",
       petBreed: "Shih Tzu",
       rating: 5,
     },
     {
-      quote: "Servicio excepcional desde la reserva hasta la entrega. Las fotos del antes y después son un detalle hermoso. Gracias por cuidar tan bien a Bruno.",
-      author: "Roberto Sánchez",
+      quote: "Servicio excepcional desde la recepción hasta la entrega. Las fotos del antes y después son un detalle hermoso. Gracias por cuidar tan bien a Bruno.",
+      author: "Roberto Delgadillo",
       petName: "Bruno",
       petBreed: "Schnauzer",
       rating: 5,
@@ -159,7 +159,7 @@ export function TestimonialsSection() {
             </div>
             <span className="font-sans text-warm-dark font-semibold">5.0</span>
             <span className="text-warm-dark/40">|</span>
-            <span className="font-sans text-warm-dark/70 text-sm">+120 reseñas en Google</span>
+            <span className="font-sans text-warm-dark/70 text-sm">+120 reseñas en Google — Guadalajara</span>
           </div>
         </motion.div>
       </div>

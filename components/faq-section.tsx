@@ -10,28 +10,32 @@ interface FAQItem {
 
 const faqItems: FAQItem[] = [
   {
+    question: "¿Dónde están ubicados? ¿Atienden en toda Guadalajara?",
+    answer: "Estamos en Jardines de Guadalupe, Guadalajara: Otilio Montaño 510-local 141, con fácil acceso desde Zapopan, Tlaquepaque y el centro de GDL. Tenemos estacionamiento gratuito y área de espera cómoda. Si vienes de Andares o Ciudad Bugambilias, estamos a solo 15-20 minutos."
+  },
+  {
     question: "¿Con cuánta anticipación debo reservar mi cita?",
-    answer: "Recomendamos reservar con al menos 48-72 horas de anticipación para garantizar disponibilidad. En temporadas altas como fiestas y vacaciones, te sugerimos reservar con una semana de anticipación. Para citas urgentes, contáctanos directamente por WhatsApp."
+    answer: "Recomendamos reservar con al menos 48-72 horas de anticipación. En temporadas altas como Navidad, Día de Muertos y fines de semana largos en Guadalajara, reserva con una semana de anticipación. Para citas urgentes, escríbenos por WhatsApp."
   },
   {
     question: "¿Qué incluye el servicio de Spa Premium?",
-    answer: "Nuestro servicio de Spa Premium incluye baño con productos hipoalergénicos de alta gama, acondicionador nutritivo, masaje relajante, limpieza de oídos, corte de uñas, limpieza dental básica, perfume premium y un lazo o pañuelo de cortesía. Además, tu mascota disfrutará de aromaterapia y música relajante durante todo el proceso."
+    answer: "Nuestro servicio premium incluye baño con productos hipoalergénicos, acondicionador nutritivo, masaje relajante, limpieza de oídos, corte de uñas, limpieza dental básica, perfume premium y un lazo o pañuelo de cortesía. Todo con aromaterapia y música relajante."
   },
   {
     question: "¿Aceptan todas las razas y tamaños?",
-    answer: "Sí, atendemos a perros de todas las razas y tamaños, desde Chihuahuas hasta Gran Daneses. Nuestro equipo está capacitado para manejar las necesidades específicas de cada raza, incluyendo técnicas de corte especializadas y cuidados particulares para pelajes dobles, rizados o lisos."
+    answer: "Sí, atendemos perros de todas las razas y tamaños, desde Chihuahuas hasta Gran Daneses. Nuestro equipo está capacitado en técnicas de corte especializadas para cada raza: pelajes dobles, rizados, lisos, y razas de pelo duro."
   },
   {
     question: "¿Cuánto tiempo dura una sesión de grooming completo?",
-    answer: "El tiempo varía según el tamaño y condición del pelaje de tu mascota. En promedio, un grooming completo toma entre 1.5 a 3 horas. Te enviaremos un mensaje cuando tu mascota esté lista para ser recogida. Contamos con área de espera cómoda si prefieres quedarte."
+    answer: "En promedio, un grooming completo toma entre 1.5 a 3 horas según el tamaño y condición del pelaje. Te enviaremos un mensaje cuando tu mascota esté lista. Contamos con área de espera y café de cortesía mientras esperas."
   },
   {
     question: "¿Qué productos utilizan?",
-    answer: "Utilizamos exclusivamente productos premium, hipoalergénicos y libres de crueldad animal. Nuestros champús y acondicionadores son importados de marcas reconocidas como Isle of Dogs, Chris Christensen y Artero. Para pieles sensibles, contamos con líneas especializadas y productos naturales."
+    answer: "Usamos productos premium hipoalergénicos libres de crueldad animal. Nuestras marcas incluyen Isle of Dogs, Chris Christensen y Artero. Para pieles sensibles tenemos líneas especializadas. También vendemos estos productos para que mantengas el cuidado en casa."
   },
   {
     question: "¿Mi perro necesita estar vacunado?",
-    answer: "Sí, por la seguridad de todas las mascotas que nos visitan, requerimos que tu perro tenga al día sus vacunas básicas (rabia, parvovirus, moquillo). Te pediremos mostrar la cartilla de vacunación en tu primera visita. Esto nos ayuda a mantener un ambiente seguro y saludable."
+    answer: "Sí, por seguridad de todos nuestros visitantes peludos, requerimos vacunas básicas al día (rabia, parvovirus, moquillo). Te pediremos la cartilla de vacunación en la primera visita. Esto nos ayuda a mantener un ambiente saludable para todos."
   },
 ]
 

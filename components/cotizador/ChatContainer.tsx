@@ -111,7 +111,7 @@ export function ChatContainer({ onStepChange }: { onStepChange?: (step: number) 
           {
             type: "agent",
             content:
-              "¡Hola! 👋 Soy el groomer AI de Aideens.\nTómale foto a tu perro tal como está — sin arreglar — y te digo exactamente qué necesita y cuánto cuesta.",
+              "¡Hola! 👋 Soy el groomer AI de Aideens, tu estética canina en Guadalajara.\nTómale foto a tu perro tal como está — sin arreglar — y te cotizo al instante.",
           },
           { type: "cta-photo" },
         ])

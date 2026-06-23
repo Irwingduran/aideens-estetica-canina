@@ -6,26 +6,6 @@ import Link from "next/link"
 export function Footer() {
   const socialLinks = [
     {
-      name: "Instagram",
-      href: "#",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="2" y="2" width="20" height="20" rx="5" />
-          <circle cx="12" cy="12" r="4" />
-          <circle cx="18" cy="6" r="1.5" fill="currentColor" stroke="none" />
-        </svg>
-      ),
-    },
-    {
-      name: "Facebook",
-      href: "#",
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
-        </svg>
-      ),
-    },
-    {
       name: "WhatsApp",
       href: "#",
       icon: (
@@ -44,8 +24,8 @@ export function Footer() {
   ]
 
   const serviceLinks = [
-    { href: "#servicios", label: "Bath & Dry" },
-    { href: "#servicios", label: "Full Grooming" },
+    { href: "#servicios", label: "Baño & Secado" },
+    { href: "#servicios", label: "Grooming Completo" },
     { href: "#servicios", label: "Productos Premium" },
   ]
 
@@ -55,12 +35,12 @@ export function Footer() {
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
         <circle cx="12" cy="10" r="3" />
       </svg>
-    ), text: "Calle Principal #123, Ciudad" },
+    ), text: "Otilio Montaño 510-local 141, Jardines de Guadalupe, Guadalajara, Jal." },
     { icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
       </svg>
-    ), text: "+52 55 1234 5678" },
+    ), text: "+52 33 1234 5678" },
     { icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="10" />
@@ -89,7 +69,7 @@ export function Footer() {
               <span className="font-serif text-xl text-cream">Aideens</span>
             </Link>
             <p className="font-sans text-sm text-cream/60 leading-relaxed mb-6">
-              Cuidado premium para tu mejor amigo. Más de 5 años transformando peludos con amor y profesionalismo.
+              Estética canina en Guadalajara. Otilio Montaño 510-local 141, Jardines de Guadalupe. Más de 5 años transformando peludos con amor y profesionalismo.
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-3">

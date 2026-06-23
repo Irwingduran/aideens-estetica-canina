@@ -92,10 +92,10 @@ function ServiceCard({ title, duration, price, description, image, icon, index }
 export function ServicesSection() {
   const services = [
     {
-      title: "Bath & Dry",
+      title: "Baño & Secado",
       duration: "45 min",
       price: "desde $350",
-      description: "Baño profundo con shampoo premium orgánico, secado profesional y cepillado completo para un pelaje brillante.",
+      description: "Baño profundo con shampoo premium orgánico, secado profesional y cepillado completo. El favorito en Guadalajara.",
       image: "/images/service-bath.jpg",
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -106,7 +106,7 @@ export function ServicesSection() {
       ),
     },
     {
-      title: "Full Grooming",
+      title: "Grooming Completo",
       duration: "90 min",
       price: "desde $550",
       description: "Servicio completo: baño, corte personalizado según raza, arreglo de uñas, limpieza de oídos y perfumado final.",

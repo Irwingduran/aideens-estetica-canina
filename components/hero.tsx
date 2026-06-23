@@ -63,7 +63,7 @@ export function Hero() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="font-sans text-lg text-warm-dark/70 mt-6 max-w-md"
             >
-              Cuidado premium para tu mejor amigo. Grooming profesional con productos orgánicos.
+              Cuidado premium para tu mejor amigo. Grooming profesional en Guadalajara y Zapopan.
             </motion.p>
           </div>
 
@@ -127,7 +127,7 @@ export function Hero() {
                   </defs>
                   <text className="fill-warm-dark text-[10px] font-sans uppercase tracking-[0.3em]">
                     <textPath href="#circle">
-                      ✦ Groomers Certificados ✦ Premium Quality ✦
+                        ✦ Guadalajara ✦ Zapopan ✦ Groomers Certificados ✦
                     </textPath>
                   </text>
                 </svg>
