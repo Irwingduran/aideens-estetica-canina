@@ -1,9 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOpenAIClient } from "@/lib/openai";
-import { parseQuoteFromResponse } from "@/lib/quote-parser";
+import { getSupabaseServerClient } from "@/lib/supabase";
+import { parseQuoteFromResponse, parseProductSuggestions } from "@/lib/quote-parser";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
-const SYSTEM_PROMPT = `Eres el groomer AI de Aideens Estética Canina, una estética canina premium.
+async function buildSystemPrompt(): Promise<string> {
+  let productosSection = "";
+
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data: products } = await supabase
+      .from("products")
+      .select("name, description, price_mxn, tipo, size, slug")
+      .eq("active", true)
+      .order("name");
+
+    if (products && products.length > 0) {
+      const grouped: Record<string, typeof products> = {};
+      for (const p of products) {
+        const key = p.tipo ?? "general";
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(p);
+      }
+
+      productosSection = Object.entries(grouped)
+        .map(([tipo, items]) => {
+          const header = `PRODUCTOS ${tipo.toUpperCase()}:`;
+          const lines = items.map(
+            (p) => `- ${p.name} (${p.size ?? "talla única"}) — $${p.price_mxn} — ${p.description ?? ""}`
+          );
+          return [header, ...lines].join("\n");
+        })
+        .join("\n\n");
+    }
+  } catch {
+    // If DB fetch fails, continue without product catalog
+  }
+
+  return `Eres el groomer AI de Aideens Estética Canina, una estética canina premium.
 Tu objetivo es analizar fotos de perros y generar cotizaciones precisas.
 
 CATÁLOGO DE PRECIOS (MXN):
@@ -22,6 +56,9 @@ EXTRAS:
 |---|---|
 | Desenredo leve (algunos nudos) | +$80 |
 | Desenredo severo (bastantes nudos) | +$150 |
+
+PRODUCTOS RECOMENDABLES:
+${productosSection || "(No hay productos disponibles para recomendar)"}
 
 REGLAS:
 - Responde SIEMPRE en español, tono cálido y experto.
@@ -50,7 +87,24 @@ REGLAS:
     sin nudos: precio base
     algunos nudos: +$80
     bastantes nudos: +$150
-- No incluyas el JSON en las respuestas de seguimiento (sin imagen), solo texto conversacional.`;
+- No incluyas el JSON en las respuestas de seguimiento (sin imagen), solo texto conversacional.
+
+RECOMENDACIÓN DE PRODUCTOS (solo en la respuesta final):
+En tu último mensaje de la sesión (cuando ya ajustaste por nudos y das la cotización final),
+recomienda 2-3 productos de la lista de PRODUCTOS RECOMENDABLES que sean relevantes para el perro
+(según tamaño, tipo de pelaje, necesidades). Incluye un bloque separado:
+
+\`\`\`json_productsuggestions
+[
+  {
+    "nombre": "Nombre del producto",
+    "descripcion": "Breve descripción",
+    "precio": 123,
+    "razon": "Por qué es bueno para este perro"
+  }
+]
+\`\`\``;
+}
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -75,18 +129,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const systemPrompt = await buildSystemPrompt();
     const openai = getOpenAIClient();
 
-    // Build the messages array for OpenAI
     const openaiMessages: ChatCompletionMessageParam[] = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: systemPrompt },
     ];
 
     for (let idx = 0; idx < messages.length; idx++) {
       const msg = messages[idx];
 
       if (idx === 0 && msg.role === "user" && imageBase64 && mimeType) {
-        // First user message with image — use vision format
         const dataUrl = `data:${mimeType};base64,${imageBase64}`;
         openaiMessages.push({
           role: "user",
@@ -116,7 +169,7 @@ export async function POST(request: NextRequest) {
       const response = await openai.chat.completions.create(
         {
           model: "gpt-4o",
-          max_tokens: 1024,
+          max_tokens: 2048,
           messages: openaiMessages,
         },
         { signal: controller.signal }
@@ -124,10 +177,12 @@ export async function POST(request: NextRequest) {
 
       const rawText = response.choices[0]?.message?.content ?? "";
       const { cleanText, quoteData } = parseQuoteFromResponse(rawText);
+      const productSuggestions = parseProductSuggestions(rawText);
 
       return NextResponse.json({
         text: cleanText,
         quoteData: quoteData ?? null,
+        productSuggestions: productSuggestions ?? null,
       });
     } finally {
       clearTimeout(timeout);
@@ -135,7 +190,7 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     if (error instanceof Error && error.name === "AbortError") {
       return NextResponse.json(
-        { text: "La solicitud tardó demasiado. ¿Intentamos de nuevo?", quoteData: null },
+        { text: "La solicitud tardó demasiado. ¿Intentamos de nuevo?", quoteData: null, productSuggestions: null },
         { status: 200 }
       );
     }
@@ -146,13 +201,13 @@ export async function POST(request: NextRequest) {
       (error as { status: number }).status === 429
     ) {
       return NextResponse.json(
-        { text: "Estamos muy ocupados en este momento. Intenta en un momento.", quoteData: null },
+        { text: "Estamos muy ocupados en este momento. Intenta en un momento.", quoteData: null, productSuggestions: null },
         { status: 200 }
       );
     }
     console.error("Quote API error:", error);
     return NextResponse.json(
-      { text: "Algo salió mal, ¿intentamos de nuevo?", quoteData: null },
+      { text: "Algo salió mal, ¿intentamos de nuevo?", quoteData: null, productSuggestions: null },
       { status: 200 }
     );
   }

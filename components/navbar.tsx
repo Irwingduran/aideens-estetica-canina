@@ -3,10 +3,16 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { CartSidebar } from "@/components/CartSidebar"
+import { AuthModal } from "@/components/AuthModal"
+import { useAuth } from "@/context/AuthContext"
+import { LogIn, User } from "lucide-react"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
+  const { user, loading } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,10 +23,9 @@ export function Navbar() {
   }, [])
 
   const navItems = [
-    { href: "#servicios", label: "Servicios" },
-    { href: "#proceso", label: "Proceso" },
-    { href: "#galeria", label: "Galería" },
-    { href: "#faq", label: "FAQ" },
+    { href: "/#servicios", label: "Servicios" },
+    { href: "/productos", label: "Productos" },
+    { href: "/#galeria", label: "Galería" },
   ]
 
   return (
@@ -55,7 +60,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -66,38 +71,60 @@ export function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
+          <CartSidebar />
+          {user ? (
+            <Link
+              href={user.clientRole === "admin" ? "/admin" : "/mi-cuenta"}
+              className="flex items-center gap-1.5 p-2 text-warm-dark/80 hover:text-warm-dark transition-colors"
+            >
+              <User className="w-5 h-5" />
+            </Link>
+          ) : (
+            <AuthModal
+              open={authOpen}
+              onOpenChange={setAuthOpen}
+              trigger={
+                <button className="flex items-center gap-1.5 p-2 text-warm-dark/80 hover:text-warm-dark transition-colors">
+                  <LogIn className="w-5 h-5" />
+                </button>
+              }
+            />
+          )}
           <Link
             href="/cotizar"
-            className="px-6 py-2.5 bg-warm-dark text-cream font-sans text-sm rounded-full hover:bg-gold transition-colors duration-300"
+            className="px-5 py-2.5 bg-warm-dark text-cream font-sans text-sm rounded-full hover:bg-gold transition-colors duration-300"
           >
            Cotiza con una foto
           </Link>
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 text-warm-dark"
-          aria-label="Toggle menu"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+        <div className="flex items-center gap-2 md:hidden">
+          <CartSidebar />
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 text-warm-dark"
+            aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? (
-              <path d="M6 6L18 18M6 18L18 6" />
-            ) : (
-              <>
-                <path d="M4 8h16" />
-                <path d="M4 16h16" />
-              </>
-            )}
-          </svg>
-        </button>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              {isMobileMenuOpen ? (
+                <path d="M6 6L18 18M6 18L18 6" />
+              ) : (
+                <>
+                  <path d="M4 8h16" />
+                  <path d="M4 16h16" />
+                </>
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -120,12 +147,28 @@ export function Navbar() {
               {item.label}
             </Link>
           ))}
+          {user ? (
+            <Link
+              href={user.clientRole === "admin" ? "/admin" : "/mi-cuenta"}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="font-sans text-warm-dark py-2"
+            >
+              {user.clientRole === "admin" ? "Admin" : "Mi Cuenta"}
+            </Link>
+          ) : (
+            <button
+              onClick={() => { setAuthOpen(true); setIsMobileMenuOpen(false) }}
+              className="font-sans text-warm-dark py-2 text-left"
+            >
+              Iniciar sesión
+            </button>
+          )}
           <Link
-            href="#contacto"
+            href="/cotizar"
             onClick={() => setIsMobileMenuOpen(false)}
             className="w-full py-3 bg-warm-dark text-cream font-sans text-center rounded-full"
           >
-            Agenda tu cita
+            Cotiza con una foto
           </Link>
         </div>
       </motion.div>

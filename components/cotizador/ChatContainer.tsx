@@ -8,7 +8,8 @@ import { LeadCaptureCard } from "./LeadCaptureCard"
 import { LoadingDots } from "./LoadingDots"
 import { QuickReplies } from "./QuickReplies"
 import { InputBar } from "./InputBar"
-import type { QuoteData } from "@/lib/quote-parser"
+import { SuggestedProductsCard } from "./SuggestedProductsCard"
+import type { QuoteData, ProductSuggestion } from "@/lib/quote-parser"
 
 // ── State machine ──
 type ChatState =
@@ -29,6 +30,7 @@ type MessageItem =
   | { type: "quick-replies"; options: string[] }
   | { type: "lead-capture" }
   | { type: "loading"; content: string }
+  | { type: "suggested-products"; data: ProductSuggestion[] }
   | { type: "cta-photo" }
   | { type: "cta-booking" }
 
@@ -94,6 +96,7 @@ export function ChatContainer({ onStepChange }: { onStepChange?: (step: number) 
   const [messages, setMessages] = useState<MessageItem[]>([])
   const [apiHistory, setApiHistory] = useState<ChatMessage[]>([])
   const [quoteData, setQuoteData] = useState<QuoteData | null>(null)
+  const [productSuggestions, setProductSuggestions] = useState<ProductSuggestion[] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -281,6 +284,7 @@ export function ChatContainer({ onStepChange }: { onStepChange?: (step: number) 
       const userMsg: ChatMessage = { role: "user", content: option }
       const newHistory = [...apiHistory, userMsg]
 
+      let suggestions: ProductSuggestion[] | null = null
       try {
         const res = await fetch("/api/quote", {
           method: "POST",
@@ -290,18 +294,34 @@ export function ChatContainer({ onStepChange }: { onStepChange?: (step: number) 
         const data = await res.json()
         const assistantMsg: ChatMessage = { role: "assistant", content: data.text }
         setApiHistory([...newHistory, assistantMsg])
+        if (data.productSuggestions) {
+          suggestions = data.productSuggestions
+        }
       } catch {
         // Continue with local adjustment if API fails
       }
 
       setQuoteData(adjustedQuote)
-      setMessages((prev) => [
-        ...prev,
+      if (suggestions) setProductSuggestions(suggestions)
+
+      const updatedMessages: MessageItem[] = [
         { type: "agent", content: adjustmentText + "\nAquí está tu cotización final:" },
         { type: "quote", data: adjustedQuote, isFinal: true },
+      ]
+
+      if (suggestions && suggestions.length > 0) {
+        updatedMessages.push(
+          { type: "agent", content: "También te recomiendo estos productos para tu peludo:" },
+          { type: "suggested-products", data: suggestions },
+        )
+      }
+
+      updatedMessages.push(
         { type: "agent", content: "¿A dónde te mando el resumen?" },
         { type: "lead-capture" },
-      ])
+      )
+
+      setMessages((prev) => [...prev, ...updatedMessages])
       setChatState("FINAL_QUOTE")
       setIsLoading(false)
     },
@@ -407,6 +427,8 @@ export function ChatContainer({ onStepChange }: { onStepChange?: (step: number) 
         return <QuickReplies key={index} options={item.options} onSelect={handleQuickReply} />
       case "lead-capture":
         return <LeadCaptureCard key={index} onSubmit={handleLeadSave} />
+      case "suggested-products":
+        return <SuggestedProductsCard key={index} products={item.data} />
       case "cta-photo":
         return (
           <div key={index} className="flex justify-center">

@@ -3,6 +3,8 @@ import { Hero } from "@/components/hero"
 import { StatsSection } from "@/components/stats-section"
 import { ServicesSection } from "@/components/services-section"
 import { ProcessSection } from "@/components/process-section"
+import { FeaturedProducts } from "@/components/featured-products"
+import { HomeopathySection } from "@/components/homeopathy-section"
 import { GallerySection } from "@/components/gallery-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { FAQSection } from "@/components/faq-section"
@@ -19,6 +21,8 @@ export default function Home() {
       <StatsSection />
       <ServicesSection />
       <ProcessSection />
+      <FeaturedProducts />
+      <HomeopathySection />
       <GallerySection />
       <TestimonialsSection />
       <FAQSection />
