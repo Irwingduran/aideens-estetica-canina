@@ -15,6 +15,16 @@ export function Navbar() {
   const { user, loading } = useAuth()
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("auth") === "required" && !user && !loading) {
+      setAuthOpen(true)
+      const url = new URL(window.location.href)
+      url.searchParams.delete("auth")
+      window.history.replaceState({}, "", url.toString())
+    }
+  }, [user, loading])
+
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
     }

@@ -1,24 +1,29 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { createMiddlewareClient } from "@/lib/supabase-server";
 
 const protectedRoutes = ["/mi-cuenta", "/checkout"];
 const adminRoutes = ["/admin"];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const supabaseSession = request.cookies.get("sb-auth-token")?.value;
-
   const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
   const isAdmin = adminRoutes.some((route) => pathname.startsWith(route));
 
-  if (isAdmin && !supabaseSession) {
-    return NextResponse.redirect(new URL("/?auth=required", request.url));
+  if (!isProtected && !isAdmin) {
+    return NextResponse.next();
   }
 
-  if (isProtected && !supabaseSession) {
-    return NextResponse.redirect(new URL("/?auth=required", request.url));
+  let response = NextResponse.next({ request });
+  const supabase = createMiddlewareClient(request, response);
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    const url = new URL("/", request.url);
+    url.searchParams.set("auth", "required");
+    return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

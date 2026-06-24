@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { createSessionClient } from "@/lib/supabase-server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const sessionClient = createSessionClient(request);
+    const { data: { user }, error: authError } = await sessionClient.auth.getUser();
     const supabase = getSupabaseServerClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
@@ -40,8 +42,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const sessionClient = createSessionClient(request);
+    const { data: { user }, error: authError } = await sessionClient.auth.getUser();
     const supabase = getSupabaseServerClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
