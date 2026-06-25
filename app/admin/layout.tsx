@@ -1,16 +1,18 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/context/AuthContext"
+import { supabaseClient } from "@/lib/supabase-client"
 import { cn } from "@/lib/utils"
 import {
-  LayoutDashboard, Package, ShoppingBag, Users, Leaf, LogOut, ChevronLeft,
+  LayoutDashboard, Package, ShoppingBag, Users, MessageSquare, LogOut, ChevronLeft,
 } from "lucide-react"
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/conversaciones", label: "Conversaciones", icon: MessageSquare },
   { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
   { href: "/admin/productos", label: "Productos", icon: Package },
   { href: "/admin/clientes", label: "Clientes", icon: Users },
@@ -64,7 +66,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )
           })}
         </nav>
-        <div className="p-2 border-t border-white/10">
+        <div className="p-2 border-t border-white/10 space-y-1">
+          <button
+            onClick={async () => {
+              await supabaseClient.auth.signOut()
+              router.push("/")
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-cream/50 hover:text-cream hover:bg-white/5 transition-colors"
+          >
+            <LogOut className="w-5 h-5 shrink-0" />
+            {sidebarOpen && <span>Cerrar sesión</span>}
+          </button>
           <Link
             href="/"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-cream/50 hover:text-cream hover:bg-white/5 transition-colors"

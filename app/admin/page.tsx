@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { Users, ShoppingBag, Package, DollarSign, AlertCircle, Phone, Clock } from "lucide-react"
+import { Users, ShoppingBag, Package, DollarSign, AlertCircle, Phone, Clock, Scissors } from "lucide-react"
+import { toast } from "@/components/ui/use-toast"
 
 interface Stats {
   total_clientes: number
@@ -58,6 +59,7 @@ export default function AdminDashboard() {
         setOrders(json.recentOrders ?? [])
         setLeads(json.recentLeads ?? [])
       } catch {
+        toast({ title: "Error", description: "No se pudieron cargar las estadísticas", variant: "destructive" })
       } finally {
         setLoading(false)
       }
@@ -82,6 +84,7 @@ export default function AdminDashboard() {
     { label: "Ingresos", value: `$${stats?.ingresos_totales ?? 0}`, icon: DollarSign, color: "text-green-600 bg-green-100" },
     { label: "Perros", value: stats?.total_perros ?? 0, icon: Users, color: "text-emerald-600 bg-emerald-100" },
     { label: "Leads", value: stats?.leads_pendientes ?? 0, icon: Phone, color: "text-rose-600 bg-rose-100" },
+    { label: "Servicios", value: stats?.servicios_realizados ?? 0, icon: Scissors, color: "text-indigo-600 bg-indigo-100" },
     { label: "Agotados", value: stats?.productos_agotados ?? 0, icon: AlertCircle, color: "text-red-600 bg-red-100" },
   ]
 

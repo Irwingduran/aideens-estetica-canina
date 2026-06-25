@@ -98,6 +98,7 @@ export function ChatContainer({ onStepChange }: { onStepChange?: (step: number) 
   const [quoteData, setQuoteData] = useState<QuoteData | null>(null)
   const [productSuggestions, setProductSuggestions] = useState<ProductSuggestion[] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const sessionIdRef = useRef<string>(crypto.randomUUID())
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll
@@ -344,6 +345,22 @@ export function ChatContainer({ onStepChange }: { onStepChange?: (step: number) 
 
       if (!res.ok) {
         throw new Error("Failed to save lead")
+      }
+
+      // Save conversation history
+      try {
+        await fetch("/api/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: sessionIdRef.current,
+            channel: "web",
+            messages: apiHistory,
+            metadata: { phone: whatsapp, dog_name: dogName },
+          }),
+        })
+      } catch {
+        // Non-critical — conversation save is best-effort
       }
 
       setChatState("LEAD_SAVED")

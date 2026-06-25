@@ -1,8 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/supabase-server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAdmin(request);
+    if (auth.error) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
     const supabase = getSupabaseServerClient();
 
     const { data: stats, error: statsError } = await supabase
@@ -10,13 +15,13 @@ export async function GET() {
       .select("*")
       .single();
 
-    const { data: recentOrders, error: ordersError } = await supabase
+    const { data: recentOrders } = await supabase
       .from("orders")
       .select("*, items:order_items(*), client:client_id(id, name, phone)")
       .order("created_at", { ascending: false })
       .limit(10);
 
-    const { data: recentLeads, error: leadsError } = await supabase
+    const { data: recentLeads } = await supabase
       .from("leads")
       .select("*")
       .order("created_at", { ascending: false })

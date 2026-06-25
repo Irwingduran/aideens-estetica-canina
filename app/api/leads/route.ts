@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { rateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
 interface LeadRequestBody {
   dog_name: string;
@@ -9,6 +10,14 @@ interface LeadRequestBody {
 }
 
 export async function POST(request: NextRequest) {
+  const rl = rateLimit(`lead:${getRateLimitKey(request)}`, 10, 60_000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Demasiadas solicitudes. Intenta de nuevo en un minuto." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } }
+    );
+  }
+
   try {
     const body = (await request.json()) as LeadRequestBody;
     const { dog_name, whatsapp, quote_data, source = "cotizador_web" } = body;

@@ -11,29 +11,28 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabaseServerClient();
 
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get("q");
+    const status = searchParams.get("status");
     const page = Math.max(parseInt(searchParams.get("page") ?? "1", 10) || 1, 1);
     const limit = Math.min(Math.max(parseInt(searchParams.get("limit") ?? "20", 10) || 20, 1), 100);
     const offset = (page - 1) * limit;
 
-    let countQuery = supabase.from("clients").select("*", { count: "exact", head: true });
+    let countQuery = supabase.from("orders").select("*", { count: "exact", head: true });
     let dataQuery = supabase
-      .from("clients")
-      .select("*")
+      .from("orders")
+      .select("*, items:order_items(*), client:client_id(id, name, phone)")
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
-    if (search) {
-      const filter = `name.ilike.%${search}%,phone.ilike.%${search}%,email.ilike.%${search}%`;
-      countQuery = countQuery.or(filter);
-      dataQuery = dataQuery.or(filter);
+    if (status && status !== "all") {
+      countQuery = countQuery.eq("status", status);
+      dataQuery = dataQuery.eq("status", status);
     }
 
     const { data, error, count } = await dataQuery;
     const { count: total } = await countQuery;
 
     if (error) {
-      return NextResponse.json({ error: "Error al cargar clientes" }, { status: 500 });
+      return NextResponse.json({ error: "Error al cargar pedidos" }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -46,7 +45,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Admin clients error:", error);
-    return NextResponse.json({ error: "Error al cargar clientes" }, { status: 500 });
+    console.error("Admin orders error:", error);
+    return NextResponse.json({ error: "Error al cargar pedidos" }, { status: 500 });
   }
 }
