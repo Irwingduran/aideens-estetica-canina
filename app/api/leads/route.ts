@@ -2,11 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
 import { rateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
+interface ImageData {
+  base64: string;
+  mimeType: string;
+}
+
 interface LeadRequestBody {
   dog_name: string;
   whatsapp: string;
   quote_data: Record<string, unknown>;
   source?: string;
+  images?: ImageData[];
 }
 
 export async function POST(request: NextRequest) {
@@ -20,7 +26,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as LeadRequestBody;
-    const { dog_name, whatsapp, quote_data, source = "cotizador_web" } = body;
+    const { dog_name, whatsapp, quote_data, source = "cotizador_web", images } = body;
 
     // Validate required fields
     if (!dog_name || dog_name.trim().length < 2) {
@@ -45,12 +51,44 @@ export async function POST(request: NextRequest) {
         ? Number(quote_data.total)
         : null;
 
+    // Upload images to Storage
+    const imageUrls: string[] = [];
+    if (images && images.length > 0) {
+      for (let i = 0; i < images.length; i++) {
+        const img = images[i];
+        const buffer = Buffer.from(img.base64, "base64");
+        const ext = img.mimeType.split("/")[1] ?? "jpg";
+        const fileName = `${Date.now()}_${i}.${ext}`;
+        const filePath = `leads/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("lead-images")
+          .upload(filePath, buffer, {
+            contentType: img.mimeType,
+            upsert: false,
+          });
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from("lead-images")
+            .getPublicUrl(filePath);
+          imageUrls.push(urlData.publicUrl);
+        }
+      }
+    }
+
+    // Store image URLs inside quote_json under _images
+    const quoteJson = { ...quote_data } as Record<string, unknown>;
+    if (imageUrls.length > 0) {
+      quoteJson._images = imageUrls;
+    }
+
     const { data, error } = await supabase
       .from("leads")
       .insert({
         dog_name: dog_name.trim(),
         whatsapp: whatsapp.trim(),
-        quote_json: quote_data,
+        quote_json: quoteJson,
         total_mxn: totalMxn,
         source,
       })
@@ -65,7 +103,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: true, id: data.id }, { status: 201 });
+    return NextResponse.json({ success: true, id: data.id, images: imageUrls }, { status: 201 });
   } catch (error) {
     console.error("Leads API error:", error);
     return NextResponse.json(

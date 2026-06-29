@@ -45,7 +45,17 @@ export async function GET(request: NextRequest) {
       .order("created_at", { ascending: false })
       .limit(200);
 
-    const leadsByPhone = new Map<string, typeof leads[0]>();
+    function extractImages(
+      conv: { metadata: unknown } | null,
+      lead: { quote_json: unknown } | null
+    ): string[] {
+      const metaImages = ((conv?.metadata as { images?: string[] })?.images) ?? [];
+      const quoteImages = ((lead?.quote_json as { _images?: string[] })?._images) ?? [];
+      return [...new Set([...metaImages, ...quoteImages])];
+    }
+
+    type LeadRecord = { id: string; whatsapp: string | null; dog_name: string | null; total_mxn: number | null; contacted: boolean; created_at: string; quote_json: unknown };
+    const leadsByPhone = new Map<string, LeadRecord>();
     for (const lead of leads ?? []) {
       const phone = lead.whatsapp?.replace(/\s+/g, "").replace(/^\+/, "");
       if (phone && !leadsByPhone.has(phone)) leadsByPhone.set(phone, lead);
@@ -69,6 +79,7 @@ export async function GET(request: NextRequest) {
         last_message: msgArray.length > 0 ? msgArray[msgArray.length - 1].content : null,
         messages: msgArray,
         lead_id: lead?.id ?? null,
+        images: extractImages(conv, lead ?? null),
         created_at: conv.created_at,
         updated_at: conv.updated_at,
       };
@@ -98,6 +109,7 @@ export async function GET(request: NextRequest) {
         last_message: null,
         messages: [] as Array<{ role: string; content: string }>,
         lead_id: lead.id,
+        images: extractImages(null, lead),
         created_at: lead.created_at,
         updated_at: lead.created_at,
       }));

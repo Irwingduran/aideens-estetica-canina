@@ -4,14 +4,14 @@ import { getSupabaseServerClient } from "@/lib/supabase";
 import { parseQuoteFromResponse, parseProductSuggestions } from "@/lib/quote-parser";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
-async function buildSystemPrompt(): Promise<string> {
+async function buildSystemPrompt(serviceHistory?: string): Promise<string> {
   let productosSection = "";
 
   try {
     const supabase = getSupabaseServerClient();
     const { data: products } = await supabase
       .from("products")
-      .select("name, description, price_mxn, tipo, size, slug")
+      .select("name, description, price, tipo, size, slug")
       .eq("active", true)
       .order("name");
 
@@ -27,7 +27,7 @@ async function buildSystemPrompt(): Promise<string> {
         .map(([tipo, items]) => {
           const header = `PRODUCTOS ${tipo.toUpperCase()}:`;
           const lines = items.map(
-            (p) => `- ${p.name} (${p.size ?? "talla única"}) — $${p.price_mxn} — ${p.description ?? ""}`
+            (p) => `- ${p.name} (${p.size ?? "talla única"}) — $${p.price} — ${p.description ?? ""}`
           );
           return [header, ...lines].join("\n");
         })
@@ -37,7 +37,11 @@ async function buildSystemPrompt(): Promise<string> {
     // If DB fetch fails, continue without product catalog
   }
 
-  return `Eres el groomer AI de Aideens Estética Canina, una estética canina premium.
+  const historialSection = serviceHistory
+    ? `\n\nHISTORIAL DE SERVICIOS DE ESTE PERRO:\n${serviceHistory}\n\nUsa este historial para:\n- Recomendar servicios que le gustaron al cliente o que beneficiaron al perro anteriormente.\n- Sugerir productos acordes a servicios previos (ej: si antes se usó shampoo X, recomendar el mismo o uno complementario).\n- Evitar repetir recomendaciones que ya no aplican.\n`
+    : "";
+
+  return `Eres el groomer AI de Aideens Estética Canina, una estética canina premium.${historialSection}
 Tu objetivo es analizar fotos de perros y generar cotizaciones precisas.
 
 CATÁLOGO DE PRECIOS (MXN):
@@ -89,10 +93,14 @@ REGLAS:
     bastantes nudos: +$150
 - No incluyas el JSON en las respuestas de seguimiento (sin imagen), solo texto conversacional.
 
-RECOMENDACIÓN DE PRODUCTOS (solo en la respuesta final):
-En tu último mensaje de la sesión (cuando ya ajustaste por nudos y das la cotización final),
-recomienda 2-3 productos de la lista de PRODUCTOS RECOMENDABLES que sean relevantes para el perro
-(según tamaño, tipo de pelaje, necesidades). Incluye un bloque separado:
+RECOMENDACIONES (solo en la respuesta final):
+En tu último mensaje de la sesión (cuando ya ajustaste por nudos y das la cotización final):
+
+1. Recomienda 1-2 servicios adicionales del catálogo que complementen los ya cotizados,
+   basándote en el análisis del perro y, si hay historial, en servicios anteriores.
+2. Recomienda 2-3 productos de la lista de PRODUCTOS RECOMENDABLES que sean relevantes
+   para el perro (según tamaño, tipo de pelaje, necesidades e historial).
+3. Incluye un bloque separado para los productos:
 
 \`\`\`json_productsuggestions
 [
@@ -103,8 +111,13 @@ recomienda 2-3 productos de la lista de PRODUCTOS RECOMENDABLES que sean relevan
     "razon": "Por qué es bueno para este perro"
   }
 ]
-\`\`\``;
+\`\`\`
+
+Ejemplo de recomendación de servicio extra:
+"Sugiero agregar un deslanado ya que la última vez no se hizo y su pelaje está en muda activa."`;
 }
+
+type ImageData = { base64: string; mimeType: string };
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -113,14 +126,16 @@ interface ChatMessage {
 
 interface RequestBody {
   messages: ChatMessage[];
+  images?: ImageData[];
   imageBase64?: string;
   mimeType?: string;
+  serviceHistory?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as RequestBody;
-    const { messages, imageBase64, mimeType } = body;
+    const { messages, images, imageBase64, mimeType, serviceHistory } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json(
@@ -129,31 +144,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const systemPrompt = await buildSystemPrompt();
+    const systemPrompt = await buildSystemPrompt(serviceHistory);
     const openai = getOpenAIClient();
 
     const openaiMessages: ChatCompletionMessageParam[] = [
       { role: "system", content: systemPrompt },
     ];
 
+    // Support both legacy single image and new multiple images
+    const allImages = images ?? (imageBase64 && mimeType ? [{ base64: imageBase64, mimeType }] : []);
+
     for (let idx = 0; idx < messages.length; idx++) {
       const msg = messages[idx];
 
-      if (idx === 0 && msg.role === "user" && imageBase64 && mimeType) {
-        const dataUrl = `data:${mimeType};base64,${imageBase64}`;
-        openaiMessages.push({
-          role: "user",
-          content: [
-            {
-              type: "image_url",
-              image_url: { url: dataUrl, detail: "high" },
-            },
-            {
-              type: "text",
-              text: msg.content || "Analiza esta foto de mi perro y dame una cotización.",
-            },
-          ],
-        });
+      if (idx === 0 && msg.role === "user" && allImages.length > 0) {
+        const content: ChatCompletionMessageParam["content"] = [
+          ...allImages.map((img) => ({
+            type: "image_url" as const,
+            image_url: { url: `data:${img.mimeType};base64,${img.base64}`, detail: "high" as const },
+          })),
+          {
+            type: "text" as const,
+            text: msg.content || "Analiza las fotos de mi perro y dame una cotización.",
+          },
+        ];
+        openaiMessages.push({ role: "user", content });
       } else {
         openaiMessages.push({
           role: msg.role === "user" ? "user" : "assistant",

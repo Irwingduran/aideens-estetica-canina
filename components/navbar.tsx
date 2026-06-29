@@ -24,6 +24,15 @@ export function Navbar() {
     }
   }, [user, loading])
 
+  // Listen for open-auth events from Hero or other components
+  useEffect(() => {
+    function handleOpenAuth() {
+      if (!user) setAuthOpen(true)
+    }
+    window.addEventListener("open-auth-modal", handleOpenAuth)
+    return () => window.removeEventListener("open-auth-modal", handleOpenAuth)
+  }, [user])
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)

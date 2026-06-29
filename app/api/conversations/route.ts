@@ -41,3 +41,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Error al guardar conversación" }, { status: 500 });
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { session_id, messages } = body;
+
+    if (!session_id || !messages) {
+      return NextResponse.json({ error: "session_id y messages son requeridos" }, { status: 400 });
+    }
+
+    const supabase = getSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("ai_conversations")
+      .update({ messages, updated_at: new Date().toISOString() })
+      .eq("session_id", session_id)
+      .select("id")
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: "Error al actualizar conversación" }, { status: 500 });
+    }
+
+    return NextResponse.json({ data });
+  } catch (error) {
+    console.error("Conversation update error:", error);
+    return NextResponse.json({ error: "Error al actualizar conversación" }, { status: 500 });
+  }
+}

@@ -21,6 +21,7 @@ interface ConversationItem {
   last_message: string | null
   messages: { role: string; content: string }[]
   lead_id: string | null
+  images: string[]
   created_at: string
   updated_at: string
 }
@@ -171,6 +172,30 @@ function ConversationCard({
 
       {expanded && (
         <div className="border-t border-border">
+          {item.images.length > 0 && (
+            <div className="p-4 border-b border-border bg-muted/10">
+              <p className="text-xs text-muted-foreground uppercase font-medium mb-2">
+                Fotos ({item.images.length})
+              </p>
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {item.images.map((url, i) => (
+                  <a
+                    key={i}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0"
+                  >
+                    <img
+                      src={url}
+                      alt={`Foto ${i + 1}`}
+                      className="w-24 h-24 object-cover rounded-lg border border-border hover:opacity-80 transition-opacity"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
           {item.messages.length > 0 ? (
             <div className="p-4 space-y-2 max-h-96 overflow-y-auto bg-muted/20">
               {item.messages.map((msg, i) => (

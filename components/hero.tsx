@@ -3,8 +3,11 @@
 import { motion } from "framer-motion"
 import { BeforeAfterSlider } from "./before-after-slider"
 import Link from "next/link"
+import { useAuth } from "@/context/AuthContext"
 
 export function Hero() {
+  const { user } = useAuth()
+
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Gradient Background Overlay */}
@@ -100,10 +103,28 @@ export function Hero() {
               {/* Secondary CTA */}
               <Link
                 href="#servicios"
-                className="group inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/10 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/20 hover:bg-warm-dark hover:text-cream transition-all duration-300"
+                className="group inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/10 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/10 hover:bg-border-gold  hover:text-warm-dark hover:border-gold transition-all duration-300"
               >
                 <span>Ver servicios</span>
               </Link>
+
+              {/* Login CTA */}
+              {!user && (
+                <button
+                  onClick={() => window.dispatchEvent(new CustomEvent("open-auth-modal"))}
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/5 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/10 hover:bg-gold hover:text-warm-dark hover:border-gold transition-all duration-300"
+                >
+                  🔑 Ya soy cliente
+                </button>
+              )}
+              {user && (
+                <Link
+                  href="/mi-cuenta"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/5 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/10 hover:bg-gold hover:text-warm-dark hover:border-gold transition-all duration-300"
+                >
+                  🐾 Mi cuenta
+                </Link>
+              )}
             </motion.div>
 
             {/* Floating Badge */}
