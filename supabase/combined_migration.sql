@@ -82,7 +82,7 @@ create table if not exists public.dogs (
   name          text not null,
   breed         text,
   size          text check (size in ('chico', 'mediano', 'grande', 'xl')),
-  birth_date    date,
+  weight_kg     numeric(5,1),
   notes         text,
   avatar_url    text,
   created_at    timestamptz not null default now()

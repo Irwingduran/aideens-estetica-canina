@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, breed, size, birth_date, notes } = body;
+    const { name, breed, size, weight, notes } = body;
 
     if (!name || name.trim().length < 2) {
       return NextResponse.json(
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         name: name.trim(),
         breed: breed ?? null,
         size: size ?? null,
-        birth_date: birth_date ?? null,
+        weight_kg: weight ? parseFloat(weight) : null,
         notes: notes ?? null,
       })
       .select()

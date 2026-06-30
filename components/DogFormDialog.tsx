@@ -34,7 +34,7 @@ interface DogFormData {
   name: string
   breed: string
   size: string
-  birth_date: string
+  weight: string
   notes: string
 }
 
@@ -49,7 +49,7 @@ export function DogFormDialog({ onSuccess, trigger }: DogFormDialogProps) {
     name: "",
     breed: "",
     size: "",
-    birth_date: "",
+    weight: "",
     notes: "",
   })
   const [saving, setSaving] = useState(false)
@@ -77,7 +77,7 @@ export function DogFormDialog({ onSuccess, trigger }: DogFormDialogProps) {
         const json = await res.json()
         throw new Error(json.error ?? "Error al guardar")
       }
-      setForm({ name: "", breed: "", size: "", birth_date: "", notes: "" })
+      setForm({ name: "", breed: "", size: "", weight: "", notes: "" })
       setOpen(false)
       onSuccess?.()
     } catch (err) {
@@ -142,12 +142,16 @@ export function DogFormDialog({ onSuccess, trigger }: DogFormDialogProps) {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="birth_date">Fecha de nacimiento</Label>
+            <Label htmlFor="weight">Peso (kg)</Label>
             <Input
-              id="birth_date"
-              type="date"
-              value={form.birth_date}
-              onChange={(e) => updateField("birth_date", e.target.value)}
+              id="weight"
+              type="number"
+              step="0.1"
+              min="0"
+              max="100"
+              placeholder="Ej: 12.5"
+              value={form.weight}
+              onChange={(e) => updateField("weight", e.target.value)}
             />
           </div>
           <div className="space-y-2">

@@ -42,7 +42,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const allowedFields = ["name", "breed", "size", "birth_date", "notes", "avatar_url"];
+    const allowedFields = ["name", "breed", "size", "weight_kg", "notes", "avatar_url"];
     const updates: Record<string, unknown> = {};
 
     for (const field of allowedFields) {

@@ -84,7 +84,7 @@ export function Hero() {
                 href="/cotizar"
                 className="group relative inline-flex items-center gap-3 px-10 py-4 bg-gold text-warm-dark font-sans font-semibold text-lg rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(201,168,76,0.5)]"
               >
-                <span>Cotiza con una foto </span>
+                <span>🐶✨ Cotiza con una foto </span>
                 <motion.svg
                   width="20"
                   height="20"
@@ -105,14 +105,14 @@ export function Hero() {
                 href="#servicios"
                 className="group inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/10 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/10 hover:bg-border-gold  hover:text-warm-dark hover:border-gold transition-all duration-300"
               >
-                <span>Ver servicios</span>
+                <span>🦮 Ver servicios</span>
               </Link>
 
               {/* Login CTA */}
               {!user && (
                 <button
                   onClick={() => window.dispatchEvent(new CustomEvent("open-auth-modal"))}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/5 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/10 hover:bg-gold hover:text-warm-dark hover:border-gold transition-all duration-300"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/5 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/10 hover:bg-border-gold hover:text-warm-dark hover:border-gold transition-all duration-300"
                 >
                   🔑 Ya soy cliente
                 </button>
@@ -120,9 +120,9 @@ export function Hero() {
               {user && (
                 <Link
                   href="/mi-cuenta"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/5 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/10 hover:bg-gold hover:text-warm-dark hover:border-gold transition-all duration-300"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-warm-dark/5 backdrop-blur-sm text-warm-dark font-sans font-medium text-lg rounded-full border border-warm-dark/10 hover:bg-border-gold hover:text-warm-dark hover:border-gold transition-all duration-300"
                 >
-                  🐾 Mi cuenta
+                  🐾 Panel de Control
                 </Link>
               )}
             </motion.div>
