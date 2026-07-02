@@ -75,14 +75,6 @@ function ServiceCard({ title, duration, price, description, image, icon, index }
             {description}
           </motion.p>
 
-          <motion.button
-            className="font-sans text-sm text-gold flex items-center gap-2 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400 delay-75 hover:gap-3"
-          >
-            Ver más
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </motion.button>
         </motion.div>
       </div>
     </motion.div>
@@ -93,9 +85,9 @@ export function ServicesSection() {
   const services = [
     {
       title: "Baño & Secado",
-      duration: "45 min",
-      price: "desde $350",
-      description: "Baño profundo con shampoo premium orgánico, secado profesional y cepillado completo. El favorito en Guadalajara.",
+      duration: "60 min",
+      price: "desde $200",
+      description: "Baño profundo con shampoo antipulgas, secado, cepillado completo, corte de uñas y limpieza de oídos. El favorito en Guadalajara.",
       image: "/images/service-bath.jpg",
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -106,10 +98,10 @@ export function ServicesSection() {
       ),
     },
     {
-      title: "Grooming Completo",
-      duration: "90 min",
-      price: "desde $550",
-      description: "Servicio completo: baño, corte personalizado según raza, arreglo de uñas, limpieza de oídos y perfumado final.",
+      title: "Baño & Corte",
+      duration: "120 min",
+      price: "desde $350",
+      description: "Servicio completo: baño con shampoo antipulgas, corte personalizado según raza, arreglo de uñas y limpieza de oídos.",
       image: "/images/service-grooming.jpg",
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -120,10 +112,10 @@ export function ServicesSection() {
       ),
     },
     {
-      title: "Productos Premium",
+      title: "Productos y Alternos",
       duration: "Tienda",
       price: "variedad",
-      description: "Línea exclusiva de productos para el cuidado de tu mascota: shampoos orgánicos, cepillos profesionales, snacks naturales y accesorios de lujo.",
+      description: "Línea exclusiva de productos para el cuidado de tu mascota: medicamentos, shampoos, cepillos, desparasitantes, homeopatía y más...",
       image: "/images/service-products.jpg",
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

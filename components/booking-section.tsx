@@ -158,7 +158,7 @@ export function BookingSection() {
               <span className="italic text-gold">lo mejor</span>
             </h2>
             <p className="font-sans text-lg text-warm-dark/70 leading-relaxed mb-8">
-              En Guadalajara y Zapopan, agenda una cita y déjanos consentir a tu peludo 
+              En Guadalajara, agenda una cita y déjanos consentir a tu peludo 
               con el cuidado premium que se merece. Nuestros groomers certificados 
               están listos para crear la transformación perfecta.
             </p>

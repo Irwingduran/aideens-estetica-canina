@@ -11,7 +11,7 @@ interface FAQItem {
 const faqItems: FAQItem[] = [
   {
     question: "¿Dónde están ubicados? ¿Atienden en toda Guadalajara?",
-    answer: "Estamos en Jardines de Guadalupe, Guadalajara: Otilio Montaño 510-local 141, con fácil acceso desde Zapopan, Tlaquepaque y el centro de GDL. Tenemos estacionamiento gratuito y área de espera cómoda. Si vienes de Andares o Ciudad Bugambilias, estamos a solo 15-20 minutos."
+    answer: "Estamos en Jardines de Guadalupe, Guadalajara: Otilio Montaño 510-local 141. Tenemos estacionamiento gratuito y área de espera cómoda. Si vienes de Andares o Ciudad Bugambilias, estamos a solo 15-20 minutos."
   },
   {
     question: "¿Con cuánta anticipación debo reservar mi cita?",

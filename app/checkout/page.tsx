@@ -245,7 +245,7 @@ export default function CheckoutPage() {
                   <Truck className={cn("w-5 h-5 mt-0.5", deliveryMethod === "delivery" ? "text-gold" : "text-muted-foreground")} />
                   <div>
                     <p className="text-sm font-medium">Envío a domicilio</p>
-                    <p className="text-xs text-muted-foreground">Zona GDL/Zapopan/Tlaquepaque — $50</p>
+                    <p className="text-xs text-muted-foreground">Zona GDL/Zapopan/Tlaquepaque</p>
                   </div>
                 </button>
               </div>
